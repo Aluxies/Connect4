@@ -1,9 +1,8 @@
+const GAMEGRID = [];
+const height = 6;
+const width = 7;
+
 function generateGameGrid() {
-
-    const gameGrid = [];
-
-    const height = 6;
-    const width = 7;
 
     for ( let i=0; i<height; i++ ) {
 
@@ -11,21 +10,42 @@ function generateGameGrid() {
 
         for ( let j=0; j<width; j++ ) {
 
-            line.push( j );
+            line.push( 'X' );
 
         };
 
-        gameGrid.push( line );
+        GAMEGRID.push( line );
 
     };
 
-    return gameGrid;
+};
+
+function playOnePiece( positionLine, positionColumn ) {
+
+    if ( positionLine < 1 || positionLine > height ) {
+
+    };
+
+    if ( positionColumn < 1 || positionColumn > width ) {
+
+    };
+
+    const piece = 'J';
+
+    const indexLine = positionLine - 1;
+    const indexColumn = positionColumn - 1;
+
+    GAMEGRID[indexLine][indexColumn] = piece;
+
+    console.log( `Piece ${piece} placed at position (${positionLine},${positionColumn})` );
 
 };
 
-const grid = generateGameGrid();
+generateGameGrid();
 
-for ( const line of grid ) {
+playOnePiece( 2, 2 );
+
+for ( const line of GAMEGRID ) {
 
     console.log( JSON.stringify( line ) );
 
