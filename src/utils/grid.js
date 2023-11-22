@@ -1,5 +1,6 @@
 const GAME = {
     grid : [],
+    gridOccupations : [],
     height : 6,
     width: 7,
 };
@@ -11,17 +12,29 @@ function generateGameGrid() {
 
     for ( let i=0; i<HEIGHT; i++ ) {
 
-        const line = [];
+        const gridline = [];
 
         for ( let j=0; j<WIDTH; j++ ) {
 
-            line.push( 'X' );
+            gridline.push( 'X' );
 
         };
 
-        GAME.grid.push( line );
+        GAME.grid.push( gridline );
 
     };
+
+    const gridOccupations = [];
+
+    for ( let i=0; i<WIDTH; i++ ) {
+
+        gridOccupations.push( HEIGHT-1 );
+
+    };
+
+    GAME.gridOccupations = gridOccupations;
+
+    console.log( JSON.stringify( GAME.gridOccupations ) );
 
     return GAME;
 

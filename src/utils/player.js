@@ -15,31 +15,34 @@ class Player {
     const WIDTH = game.width;
     const GRID = game.grid;
 
-    const positionLine = askForPosition( HEIGHT, 'line' );
-    const positionColumn = askForPosition( WIDTH, 'column' );
+    // const positionLine = askForPosition( HEIGHT, 'line' );
+    const positionColumn = askForPosition( WIDTH  );
 
     const piece = this.piece;
-    const indexLine = positionLine - 1;
+
     const indexColumn = positionColumn - 1;
+    const indexLine = game.gridOccupations[indexColumn];
 
     GRID[indexLine][indexColumn] = piece;
 
+    game.gridOccupations[indexColumn]--;
+
     console.log(
-      `${this.pseudo} has placed piece ${piece} at position (${positionLine},${positionColumn})\n`
+      `${this.pseudo} has placed piece ${piece} at position (${indexLine+1},${positionColumn})\n`
     );
   }
 };
 
-function askForPosition( maxValue, word ) {
+function askForPosition( maxValue ) {
 
   let position = null;
 
   while ( position === null ) {
 
-    position = prompt( `Enter the position of the ${word} : ` );
+    position = prompt( `Enter the position of the column : ` );
     position = parseInt( position );
 
-    const hasError = verifyPositionLine( position, maxValue, word );
+    const hasError = verifyPosition( position, maxValue );
 
     if ( hasError ) position = null;
 
@@ -49,15 +52,16 @@ function askForPosition( maxValue, word ) {
 
 };
 
-function verifyPositionLine( position, maxValue, word ) {
+function verifyPosition( position, maxValue ) {
 
   if ( isNaN( position ) ) {
-    console.error( `Invalid position ${word} data type : must be a number` );
+    console.error( `Invalid position column data type : must be a number` );
     return true;
   };
+  
   if (position < 1 || position > maxValue) {
     console.error(
-      `Invalid position ${word} : must be between 1 and ${maxValue} included.`
+      `Invalid position column : must be between 1 and ${maxValue} included.`
     );
     return true;
   };
