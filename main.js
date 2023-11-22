@@ -24,9 +24,13 @@ function playOnePiece( positionLine, positionColumn ) {
 
     if ( positionLine < 1 || positionLine > height ) {
 
+        return console.error( `Invalid position line : must be between 1 and ${height} included.` );
+
     };
 
     if ( positionColumn < 1 || positionColumn > width ) {
+
+        return console.error( `Invalid position column : must be between 1 and ${height} included.` );
 
     };
 
