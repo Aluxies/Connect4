@@ -1,0 +1,19 @@
+{
+  "name": "connect4",
+  "version": "1.0.0",
+  "description": "Connect4",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aluxies/Connect4.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aluxies/Connect4/issues"
+  },
+  "homepage": "https://github.com/Aluxies/Connect4#readme"
+}
