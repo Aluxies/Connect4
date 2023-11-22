@@ -8,67 +8,58 @@ class Player {
   }
 
   playPiece(game) {
-    
-    console.log( `> Player ${this.pseudo} :\n` );
+    console.log(`> Player ${this.pseudo} :\n`);
 
     const HEIGHT = game.height;
     const WIDTH = game.width;
     const GRID = game.grid;
 
-    // const positionLine = askForPosition( HEIGHT, 'line' );
-    const positionColumn = askForPosition( WIDTH  );
-
-    const piece = this.piece;
-
+    const positionColumn = askForPositionColumn(WIDTH);
     const indexColumn = positionColumn - 1;
-    const indexLine = game.gridOccupations[indexColumn];
 
-    GRID[indexLine][indexColumn] = piece;
+    const indexLine = game.gridOccupations[indexColumn];
+    const positionLine = indexLine + 1;
+
+    GRID[indexLine][indexColumn] = this.piece;
 
     game.gridOccupations[indexColumn]--;
 
     console.log(
-      `${this.pseudo} has placed piece ${piece} at position (${indexLine+1},${positionColumn})\n`
+      `${this.pseudo} has placed piece ${this.piece} at position (${positionLine},${positionColumn})\n`
     );
   }
-};
+}
 
-function askForPosition( maxValue ) {
-
+function askForPositionColumn(width) {
   let position = null;
 
-  while ( position === null ) {
+  while (position === null) {
+    position = prompt(`Enter the position of the column : `);
+    position = parseInt(position);
 
-    position = prompt( `Enter the position of the column : ` );
-    position = parseInt( position );
+    const hasError = verifyPosition(position, width);
 
-    const hasError = verifyPosition( position, maxValue );
-
-    if ( hasError ) position = null;
-
-  };
+    if (hasError) position = null;
+  }
 
   return position;
+}
 
-};
-
-function verifyPosition( position, maxValue ) {
-
-  if ( isNaN( position ) ) {
-    console.error( `Invalid position column data type : must be a number` );
+function verifyPosition(position, width) {
+  if (isNaN(position)) {
+    console.error(`Invalid position column data type : must be a number`);
     return true;
-  };
-  
-  if (position < 1 || position > maxValue) {
+  }
+
+  if (position < 1 || position > width) {
     console.error(
-      `Invalid position column : must be between 1 and ${maxValue} included.`
+      `Invalid position column : must be between 1 and ${width} included.`
     );
     return true;
-  };
+  }
 
   return false;
-
-};
+}
 
 function initPlayer(isFirstPlayer) {
   let pseudo = null;
@@ -87,7 +78,7 @@ function initPlayer(isFirstPlayer) {
   console.log(`> Player's pseudo set to "${pseudo}"\n`);
 
   return player;
-};
+}
 
 module.exports = {
   initPlayer,

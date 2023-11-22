@@ -1,3 +1,3 @@
-const { startGame } = require('./utils/game');
+const { startGame } = require("./utils/game");
 
 startGame();

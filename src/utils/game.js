@@ -1,50 +1,44 @@
-const { generateGameGrid, renderGameGrid } = require('./grid');
-const { initPlayer } = require('./player');
+const { generateGameGrid, renderGameGrid } = require("./grid");
+const { initPlayer } = require("./player");
 
 function initGame() {
+  console.clear();
 
-    console.clear();
+  const GAME = generateGameGrid();
 
-    const GAME = generateGameGrid();
+  const priority = Math.floor(Math.random() * 2);
+  const isFirstPlayer = priority === 1;
 
-    const priority = Math.floor( Math.random() * 2 );
-    const isFirstPlayer = priority === 1;
+  const player1 = initPlayer(isFirstPlayer);
+  const player2 = initPlayer(!isFirstPlayer);
 
-    const player1 = initPlayer( isFirstPlayer );
-    const player2 = initPlayer( !isFirstPlayer );
+  GAME.players = [player1, player2];
 
-    GAME.players = [ player1, player2 ];
-
-    return GAME;
-
-};
+  return GAME;
+}
 
 function startGame() {
+  const GAME = initGame();
 
-    const GAME = initGame();
+  const players = GAME.players;
 
-    const players = GAME.players;
+  const firstPlayer = players.find((player) => player.isFirstPlayer);
+  const secondPlayer = players.find((player) => !player.isFirstPlayer);
 
-    const firstPlayer = players.find( player => player.isFirstPlayer );
-    const secondPlayer = players.find( player => !player.isFirstPlayer );
+  console.log(`First player : ${firstPlayer.pseudo}`);
+  console.log(`Second player : ${secondPlayer.pseudo}`);
 
-    console.log( `First player : ${firstPlayer.pseudo}` );
-    console.log( `Second player : ${secondPlayer.pseudo}` );
+  while (true) {
+    renderGameGrid();
 
-    while ( true ) {
+    firstPlayer.playPiece(GAME);
 
-        renderGameGrid();
+    renderGameGrid();
 
-        firstPlayer.playPiece( GAME );
-
-        renderGameGrid();
-
-        secondPlayer.playPiece( GAME );
-
-    };
-
-};
+    secondPlayer.playPiece(GAME);
+  }
+}
 
 module.exports = {
-    startGame
+  startGame,
 };

@@ -1,68 +1,52 @@
 const GAME = {
-    grid : [],
-    gridOccupations : [],
-    height : 6,
-    width: 7,
+  grid: [],
+  gridOccupations: [],
+  height: 6,
+  width: 7,
 };
 
 function generateGameGrid() {
+  const HEIGHT = GAME.height;
+  const WIDTH = GAME.width;
 
-    const HEIGHT = GAME.height;
-    const WIDTH = GAME.width;
+  for (let i = 0; i < HEIGHT; i++) {
+    const gridline = [];
 
-    for ( let i=0; i<HEIGHT; i++ ) {
+    for (let j = 0; j < WIDTH; j++) {
+      gridline.push("X");
+    }
 
-        const gridline = [];
+    GAME.grid.push(gridline);
+  }
 
-        for ( let j=0; j<WIDTH; j++ ) {
+  const gridOccupations = [];
 
-            gridline.push( 'X' );
+  for (let i = 0; i < WIDTH; i++) {
+    gridOccupations.push(HEIGHT - 1);
+  }
 
-        };
+  GAME.gridOccupations = gridOccupations;
 
-        GAME.grid.push( gridline );
-
-    };
-
-    const gridOccupations = [];
-
-    for ( let i=0; i<WIDTH; i++ ) {
-
-        gridOccupations.push( HEIGHT-1 );
-
-    };
-
-    GAME.gridOccupations = gridOccupations;
-
-    console.log( JSON.stringify( GAME.gridOccupations ) );
-
-    return GAME;
-
-};
+  return GAME;
+}
 
 function renderGameGrid() {
+  let gridString = "";
 
-    let gridString = "";
+  for (const line of GAME.grid) {
+    let lineString = "";
 
-    for ( const line of GAME.grid ) {
+    for (let i = 0; i < line.length; i++) {
+      lineString += `\t ${line[i]}`;
+    }
 
-        let lineString = "";
+    gridString += `${lineString}\n`;
+  }
 
-        for ( let i=0; i<line.length; i++ ) {
-
-            lineString += `\t ${line[i]}`;
-
-        };
-
-        gridString += `${lineString}\n`;
-    
-    };
-
-    console.log( gridString );
-
-};
+  console.log(gridString);
+}
 
 module.exports = {
-    generateGameGrid,
-    renderGameGrid
+  generateGameGrid,
+  renderGameGrid,
 };
