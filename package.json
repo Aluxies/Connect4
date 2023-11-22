@@ -4,7 +4,7 @@
   "description": "Connect4",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node ./src/main.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Aluxies/Connect4/issues"
   },
-  "homepage": "https://github.com/Aluxies/Connect4#readme"
+  "homepage": "https://github.com/Aluxies/Connect4#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
 }
