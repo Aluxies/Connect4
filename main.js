@@ -41,16 +41,36 @@ function playOnePiece( positionLine, positionColumn ) {
 
     GAMEGRID[indexLine][indexColumn] = piece;
 
-    console.log( `Piece ${piece} placed at position (${positionLine},${positionColumn})` );
+    console.log( `Piece ${piece} placed at position (${positionLine},${positionColumn})\n` );
+
+};
+
+function renderGameGrid() {
+
+    let gridString = "";
+
+    for ( const line of GAMEGRID ) {
+
+        let lineString = "";
+
+        for ( let i=0; i<line.length; i++ ) {
+
+            lineString += `\t ${line[i]}`;
+
+        };
+
+        gridString += `${lineString}\n`;
+    
+    };
+
+    return gridString;
 
 };
 
 generateGameGrid();
 
+console.log( renderGameGrid() );
+
 playOnePiece( 2, 2 );
 
-for ( const line of GAMEGRID ) {
-
-    console.log( JSON.stringify( line ) );
-
-}
+console.log( renderGameGrid() );
