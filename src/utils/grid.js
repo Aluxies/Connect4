@@ -45,7 +45,7 @@ function renderGameGrid() {
     
     };
 
-    return gridString;
+    console.log( gridString );
 
 };
 
