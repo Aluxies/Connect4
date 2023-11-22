@@ -28,18 +28,20 @@ function startGame() {
     const firstPlayer = players.find( player => player.isFirstPlayer );
     const secondPlayer = players.find( player => !player.isFirstPlayer );
 
-    console.log( "First player : " + JSON.stringify( firstPlayer ) );
-    console.log( "Second player : " + JSON.stringify( secondPlayer ) );
+    console.log( `First player : ${firstPlayer.pseudo}` );
+    console.log( `Second player : ${secondPlayer.pseudo}` );
 
-    renderGameGrid();
+    while ( true ) {
 
-    firstPlayer.playPiece( 2, 2, GAME );
+        renderGameGrid();
 
-    renderGameGrid();
+        firstPlayer.playPiece( GAME );
 
-    secondPlayer.playPiece( 3, 3, GAME );
+        renderGameGrid();
 
-    renderGameGrid();
+        secondPlayer.playPiece( GAME );
+
+    };
 
 };
 
