@@ -1,16 +1,24 @@
 {
   "name": "connect4",
   "version": "1.0.0",
-  "description": "",
+  "description": "Connect4",
   "main": "index.js",
   "scripts": {
     "init": "npm i && mkdir dist && webpack",
-    "build": "webpack",
+    "build": "webpack && node buildInfo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aluxies/Connect4.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aluxies/Connect4/issues"
+  },
+  "homepage": "https://github.com/Aluxies/Connect4#readme",
   "devDependencies": {
     "ts-loader": "^9.5.1",
     "webpack": "^5.92.1",

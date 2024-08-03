@@ -21,6 +21,8 @@ const GAME_GRID_OCCUPATIONS : number[] = [];
 let boardElement : HTMLElement;
 let messageElement : HTMLElement;
 let trapezoidContainer : HTMLElement;
+let replayButton : HTMLElement;
+let lastBuildDate : HTMLElement;
 
 let defaultCellBackgroundColor : string = "";
 let defaultCellHeight : string = "";
@@ -34,6 +36,23 @@ document.addEventListener("DOMContentLoaded", () => {
     boardElement = document.getElementById("board") as HTMLElement;
     messageElement = document.getElementById("message") as HTMLElement;
     trapezoidContainer = document.getElementById('trapezoid-container') as HTMLElement;
+    lastBuildDate = document.getElementById('lastBuildDate') as HTMLElement;
+
+    fetch('/dist/buildInfo.json')  // Remplacez par le chemin correct vers votre fichier JSON
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const date = new Date(data.date).toLocaleString("be-FR", {dateStyle: "long"}) || 'Indéfinie';
+            lastBuildDate.innerText += ` ${date}`;
+        })
+        .catch(error => {
+            console.error('Il y a eu un problème avec la requête fetch:', error);
+            lastBuildDate.innerText += 'Erreur de chargement';
+    });
 
     if (boardElement && messageElement) {
         createBoard();
@@ -43,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function createBoard() : void {
+    setColors();
     for (let i : number = 0; i < GAME_WIDTH; i++) {
         GAME_GRID_OCCUPATIONS[i] = 0;
         const column : HTMLElement = document.createElement('div');
@@ -59,8 +79,9 @@ function createBoard() : void {
         }
         boardElement.appendChild(column);
     }
-    const resetButton : HTMLElement = document.getElementById('buttonReset') as HTMLElement;
-    const replayButton : HTMLElement = document.getElementById('buttonReplay') as HTMLElement;
+    replayButton = document.getElementById('buttonReplay') as HTMLElement;
+    replayButton.style.backgroundColor = "#1176d500";
+    replayButton.style.color = "#ffffff00";
     const playForMeButton : HTMLElement = document.getElementById('playForMe') as HTMLElement;
     playForMeButton.addEventListener("click", () => {
         const countClicks = 7;
@@ -72,8 +93,7 @@ function createBoard() : void {
         }
         return true;
     });
-    resetButton.addEventListener("click", onResetButton);
-    setColors();
+    replayButton.addEventListener("click", onReplayButton);
     const firstCell : HTMLElement = document.querySelectorAll('.cell').item(0) as HTMLElement
     defaultCellBackgroundColor = firstCell.style.backgroundColor;
     defaultCellHeight = firstCell.style.height;
@@ -134,6 +154,12 @@ function determineWinner() : void {
 }
 
 function displayWinner(result : Result) : void {
+    const timeOutDelay = 1650;
+    const timeOutId = setTimeout(() => {
+        replayButton.style.backgroundColor = "#1176d5";
+        replayButton.style.color = "#ffffff";
+        clearTimeout(timeOutId);
+    }, timeOutDelay);
     messageElement.innerHTML = `Winner ${result.winner}`;
     messageElement.style.color = result.winner === 'first' ? colorFirstPlayer : colorSecondPlayer;
     console.log(JSON.stringify(trapezoidContainer));
@@ -176,9 +202,13 @@ function columnMouseOut(e : Event) : boolean {
     return true;
 }
 
-function onResetButton() : boolean {
+function onReplayButton() : boolean {
+    replayButton.style.backgroundColor = "#1176d500";
+    replayButton.style.color = "#ffffff00";
+    trapezoidContainer.style.display = "none";
     resetColumns();
     resetCells();
+    setColors();
     return true;
 }
 
@@ -196,7 +226,12 @@ function resetCells() : void {
     const cells : NodeListOf<HTMLElement> = document.querySelectorAll('.cell');
     cells.forEach((cell: HTMLElement ) : void => {
         cell.style.backgroundColor = defaultCellBackgroundColor;
-        cell.classList.remove('filled');
+        if (cell.classList.contains('filled')) {
+            cell.classList.remove('filled');
+        }
+        if (cell.classList.contains('preview')) {
+            cell.classList.remove('preview');
+        }
     });
     for ( let i : number =0; i<GAME_WIDTH; i++) {
         GAME_GRID_OCCUPATIONS[i] = 0;
@@ -297,6 +332,51 @@ function checkColumns(result : Result, cells : NodeListOf<HTMLElement> ) : Resul
     return result;
 }
 
-function checkDiagonals(result : Result, cells : NodeListOf<HTMLElement>) : Result {
+function checkDiagonals(result: Result, cells: NodeListOf<HTMLElement>): Result {
+    console.log("checkDiagonals");
+
+    const directions = [
+        { x: 1, y: 1 }, // Diagonale descendante (bas droite)
+        { x: 1, y: -1 } // Diagonale ascendante (haut droite)
+    ];
+
+    for (let row = 0; row < GAME_HEIGHT; row++) {
+        for (let col = 0; col < GAME_WIDTH; col++) {
+            for (let direction of directions) {
+                let countFirst = 0;
+                let countSecond = 0;
+                for (let k = 0; k < COUNT_TO_WIN; k++) {
+                    const x = col + k * direction.x;
+                    const y = row + k * direction.y;
+                    if (x >= 0 && x < GAME_WIDTH && y >= 0 && y < GAME_HEIGHT) {
+                        const index = y + x * GAME_HEIGHT;
+                        if (cells[index].classList.contains('filled')) {
+                            if (cells[index].dataset.isFirst === "true") {
+                                countFirst++;
+                                countSecond = 0;
+                            } else {
+                                countSecond++;
+                                countFirst = 0;
+                            }
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+
+                    if (countFirst === COUNT_TO_WIN || countSecond === COUNT_TO_WIN) {
+                        result.hasWinner = true;
+                        if (countFirst === COUNT_TO_WIN) {
+                            result.winner = 'first';
+                        } else if (countSecond === COUNT_TO_WIN) {
+                            result.winner = 'second';
+                        }
+                        return result;
+                    }
+                }
+            }
+        }
+    }
     return result;
 }
