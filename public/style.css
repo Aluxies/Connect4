@@ -26,24 +26,6 @@ body {
     font-size: xxx-large;
 }
 
-.color-picker {
-    z-index: -1;
-    position: fixed;
-    right: 5%;
-    top: 15%;
-    background-color: #1176d5;
-    width: 20vw;
-    height: 30vh;
-    border-radius: 10% 5%;
-}
-
-.color-picker .player-one, .color-picker .player-two {
-    display: flex;
-    justify-content: center;
-    margin: 15px;
-    gap: 5px;
-}
-
 .footer {
     z-index: -1;
     display: flex;
@@ -168,6 +150,16 @@ body {
     display: none;
 }
 
+.trapezoid-content-in {
+    transition: opacity 0.5s ease;
+    opacity: 1;
+}
+
+.trapezoid-content-out {
+    transition: opacity 1.15s ease;
+    opacity: 0;
+}
+
 .trapezoid {
     width: 60vw;
     height: 100vh;
@@ -179,10 +171,6 @@ body {
     left: 0;
     background-color: #d14949;
     transform: translateX(-65vw);
-    animation: animateLeftTrapezoid forwards;
-    animation-duration: 1.5s;
-    transition: linear;
-    transition-duration: 1.5s;
 }
 
 #trapezoid-right {
@@ -190,10 +178,22 @@ body {
     right: 0;
     background-color: #4848bf;
     transform: translateX(65vw);
-    animation: animateRightTrapezoid forwards;
-    animation-duration: 1.5s;
-    transition: linear;
-    transition-duration: 1.5s;
+}
+
+.trapezoid-left-in {
+    animation: animateInLeftTrapezoid forwards 1.5s;
+}
+
+.trapezoid-right-in {
+    animation: animateInRightTrapezoid forwards 1.5s;
+}
+
+.trapezoid-left-out {
+    animation: animateOutLeftTrapezoid forwards 1.5s;
+}
+
+.trapezoid-right-out {
+    animation: animateOutRightTrapezoid forwards 1.5s;
 }
 
 .trapezoid-content {
@@ -219,25 +219,40 @@ body {
     transition: ease-in-out 3s;
 }
 
-.winner-cell {
-    background-color: white;
-    animation-duration: 1.5s;
-    animation-iteration-count: infinite;
-    animation-fill-mode: forwards;
-    animation-name: animateWinnerCircle;
+.winner-cell, .winner-cell-ran-away {
     width: var(--cell-size);
     height: var(--cell-size);
     border-radius: 50%;
+    background-color: white;
+    animation-fill-mode: forwards;
 }
 
-@keyframes animateRightTrapezoid {
-    0% {transform: translateX(60vw);}
-    100% {transform: translateX(0vw);}
+.winner-cell {
+    animation: animateWinnerCircle 1.5s infinite;
 }
 
-@keyframes animateLeftTrapezoid {
-    0% {transform: translateX(-65vw);}
-    100% {transform: translateX(-4vw);}
+.winner-cell-ran-away {
+    animation: circleRunAway 1.5s infinite;
+}
+
+@keyframes animateInRightTrapezoid {
+    from {transform: translateX(60vw);}
+    to {transform: translateX(0vw);}
+}
+
+@keyframes animateInLeftTrapezoid {
+    from {transform: translateX(-65vw);}
+    to {transform: translateX(-4vw);}
+}
+
+@keyframes animateOutRightTrapezoid {
+    to {transform: translateX(60vw);}
+    from {transform: translateX(0vw);}
+}
+
+@keyframes animateOutLeftTrapezoid {
+    to {transform: translateX(-65vw);}
+    from {transform: translateX(-4vw);}
 }
 
 @keyframes animateWinnerCircle {
@@ -273,6 +288,11 @@ body {
     80%  {box-shadow: 0 0 9px rgba(251, 249, 249, 0.8); text-shadow: 0 0 4px rgba(68, 136, 198, 0.8);}
     90%  {box-shadow: 0 0 7px rgba(251, 249, 249, 0.7); text-shadow: 0 0 6px rgba(68, 136, 198, 0.9);}
     100%  {box-shadow: 0 0 5px rgba(251, 249, 249, 0.6); text-shadow: 0 0 7px rgba(68, 136, 198, 1);}
+}
+
+@keyframes circleRunAway {
+    from { transform: translateY(0)}
+    to { transform: translateY(-50vh)}
 }
 
 @font-face {

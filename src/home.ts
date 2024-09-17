@@ -21,15 +21,18 @@ const GAME_GRID_OCCUPATIONS : number[] = [];
 let boardElement : HTMLElement;
 let messageElement : HTMLElement;
 let trapezoidContainer : HTMLElement;
+let trapezoidContent : HTMLElement;
+let leftTrapezoid : HTMLElement;
+let rightTrapezoid : HTMLElement;
 let replayButton : HTMLElement;
 let lastBuildDate : HTMLElement;
 
-let defaultCellBackgroundColor : string = "";
-let defaultCellHeight : string = "";
-let defaultCellMargin : string = "";
-let defaultCellPadding : string = "";
-let colorFirstPlayer : string = "";
-let colorSecondPlayer : string = "";
+let defaultCellBackgroundColor : string;
+let defaultCellHeight : string;
+let defaultCellMargin : string;
+let defaultCellPadding : string;
+let colorFirstPlayer : string;
+let colorSecondPlayer : string;
 let isFirst : boolean = true;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,8 +40,11 @@ document.addEventListener("DOMContentLoaded", () => {
     messageElement = document.getElementById("message") as HTMLElement;
     trapezoidContainer = document.getElementById('trapezoid-container') as HTMLElement;
     lastBuildDate = document.getElementById('lastBuildDate') as HTMLElement;
+    leftTrapezoid = document.getElementById('trapezoid-left') as HTMLElement;
+    rightTrapezoid = document.getElementById('trapezoid-right') as HTMLElement;
+    trapezoidContent = document.getElementById('trapezoid-content') as HTMLElement;
 
-    fetch('/dist/buildInfo.json')  // Remplacez par le chemin correct vers votre fichier JSON
+    fetch('/dist/buildInfo.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -138,32 +144,21 @@ function determineWinner() : void {
     const cells : NodeListOf<HTMLElement> = document.querySelectorAll('.cell');
     result = checkColumns(result, cells);
     if (result.hasWinner) {
-        console.log("oui1");
         return displayWinner(result);
     }
     result = checkLines(result, cells);
     if (result.hasWinner) {
-        console.log("oui2");
         return displayWinner(result);
     }
     result = checkDiagonals(result, cells);
     if (result.hasWinner) {
-        console.log("oui3");
         return displayWinner(result);
     }
 }
 
 function displayWinner(result : Result) : void {
-    const timeOutDelay = 1650;
-    const timeOutId = setTimeout(() => {
-        replayButton.style.backgroundColor = "#1176d5";
-        replayButton.style.color = "#ffffff";
-        clearTimeout(timeOutId);
-    }, timeOutDelay);
-    messageElement.innerHTML = `Winner ${result.winner}`;
-    messageElement.style.color = result.winner === 'first' ? colorFirstPlayer : colorSecondPlayer;
-    console.log(JSON.stringify(trapezoidContainer));
-    trapezoidContainer.style.display = 'block';
+    displayTrapezoidContent(result);
+    animateInTrapezoids();
     const winnerCell : HTMLElement = document.getElementById("winner-cell") as HTMLElement;
     winnerCell.style.backgroundColor = result.winner === 'first' ? colorFirstPlayer : colorSecondPlayer;
 }
@@ -178,13 +173,9 @@ function columnMouseOver(e : Event) : boolean {
 
     const cellIndex : number = calculateNextCellIndex(columnIndex);
     const columnNextElement : HTMLElement = document.getElementById(`${columnIndex}-${cellIndex}`) as HTMLElement;
-    setElementBackgroundColor(columnNextElement);
+    columnNextElement.style.backgroundColor = getCurrentColor();
     columnNextElement.classList.add("preview");
     return true;
-}
-
-function setElementBackgroundColor(element : HTMLElement) : void {
-    element.setAttribute("style", `background-color: ${getCurrentColor()}`);
 }
 
 function calculateNextCellIndex(columnIndex : number) : number {
@@ -202,13 +193,57 @@ function columnMouseOut(e : Event) : boolean {
     return true;
 }
 
+function animateInTrapezoids() : boolean {
+    leftTrapezoid.classList.remove('trapezoid-left-out');
+    rightTrapezoid.classList.remove('trapezoid-right-out');
+    leftTrapezoid.classList.add('trapezoid-left-in');
+    rightTrapezoid.classList.add('trapezoid-right-in');
+    return true;
+}
+
+function animateOutTrapezoids() : boolean {
+    leftTrapezoid.classList.remove('trapezoid-left-in');
+    rightTrapezoid.classList.remove('trapezoid-right-in');
+    leftTrapezoid.classList.add('trapezoid-left-out');
+    rightTrapezoid.classList.add('trapezoid-right-out');
+    return true;
+}
+
 function onReplayButton() : boolean {
-    replayButton.style.backgroundColor = "#1176d500";
-    replayButton.style.color = "#ffffff00";
-    trapezoidContainer.style.display = "none";
+    animateOutTrapezoids();
+    hideTrapezoidContent();
     resetColumns();
     resetCells();
     setColors();
+    return true;
+}
+
+function displayTrapezoidContent(result : Result) : boolean {
+    const timeOutDelay = 1650;
+    const timeOutId = setTimeout(() => {
+        replayButton.style.backgroundColor = "#1176d5";
+        replayButton.style.color = "#ffffff";
+        clearTimeout(timeOutId);
+    }, timeOutDelay);
+    messageElement.innerHTML = `Winner ${result.winner}`;
+    messageElement.style.color = result.winner === 'first' ? colorFirstPlayer : colorSecondPlayer;
+    trapezoidContent.style.display = 'flex';
+    trapezoidContainer.style.display = 'block';
+    trapezoidContent.classList.add('trapezoid-content-in');
+    trapezoidContent.classList.remove('trapezoid-content-out');
+    return true;
+}
+
+function hideTrapezoidContent(): boolean {
+    const timeOutDelay = 1525;
+    trapezoidContent.classList.remove('trapezoid-content-in');
+    trapezoidContent.classList.add('trapezoid-content-out');
+    const timeOutId = setTimeout(() => {
+        replayButton.style.backgroundColor = "#1176d500";
+        replayButton.style.color = "#ffffff00";
+        trapezoidContainer.style.display = 'none';
+        clearTimeout(timeOutId);
+    }, timeOutDelay);
     return true;
 }
 
@@ -240,42 +275,35 @@ function resetCells() : void {
 
 function placeColor(cell : HTMLElement, columnIndex : number) : void {
     cell.dataset.isFirst = `${isFirst}`;
-    setElementBackgroundColor(cell);
+    cell.style.backgroundColor = getCurrentColor();
     cell.classList.remove("preview");
     cell.classList.add("filled");
-
     GAME_GRID_OCCUPATIONS[columnIndex]++;
     isFirst = !isFirst;
 }
 
-function getCurrentColor() : String {
+function getCurrentColor() : string {
     return isFirst ? colorFirstPlayer : colorSecondPlayer;
 }
 
 function checkLines(result : Result, cells : NodeListOf<HTMLElement>) : Result {
-    console.log("checkLines");
     let countFirst : number = 0;
     let countSecond : number = 0;
     let index : number= -1;
-    const matrix : Char[][] = [];
     for ( let i : number=0; i< GAME_HEIGHT; i++ ) {
         countFirst = 0;
         countSecond = 0;
-        const line : Char[] = [];
         for (let j : number=0; j<GAME_WIDTH; j++) {
             index = i + j * GAME_HEIGHT;
             if (cells[index].classList.contains('filled')) {
                 if (cells[index].dataset.isFirst === "true") {
-                    line.push('F');
                     countFirst++;
                     countSecond = 0;
                 } else {
-                    line.push('S');
                     countSecond++;
                     countFirst = 0;
                 }
             } else {
-                line.push('/');
                 countFirst = 0;
                 countSecond = 0;
             }
@@ -286,19 +314,15 @@ function checkLines(result : Result, cells : NodeListOf<HTMLElement>) : Result {
                 } else if (countSecond === COUNT_TO_WIN ) {
                     result.winner = 'second';
                 }
-                console.log("Winner !");
                 return result;
             }
         }
-        matrix.push(line);
 
     }
-    console.table(matrix);
     return result;
 }
 
 function checkColumns(result : Result, cells : NodeListOf<HTMLElement> ) : Result {
-    console.log("checkColumns");
     let countFirst : number = 0;
     let countSecond : number = 0;
     for ( let i : number =0; i< cells.length; i++ ) {
@@ -333,7 +357,6 @@ function checkColumns(result : Result, cells : NodeListOf<HTMLElement> ) : Resul
 }
 
 function checkDiagonals(result: Result, cells: NodeListOf<HTMLElement>): Result {
-    console.log("checkDiagonals");
 
     const directions = [
         { x: 1, y: 1 }, // Diagonale descendante (bas droite)
